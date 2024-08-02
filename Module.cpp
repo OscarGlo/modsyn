@@ -170,7 +170,9 @@ ADSR::ADSR(int x, int y) : Module("ADSR", 290, 190, x, y) {
 
 	pressed = false;
 	pressTime = 0;
+	pressValue = 0;
 	releaseTime = SAMPLE_RATE * 2;
+	releaseValue = 0;
 
 	trigger = new ButtonInput("trigger", 80, headerHeight + attack->height + 70);
 	addChild(trigger);
@@ -182,11 +184,13 @@ ADSR::ADSR(int x, int y) : Module("ADSR", 290, 190, x, y) {
 		float sus = (sustain->getValue() + 1) / 2;
 
 		if (pressed) {
-			return pressTime / SAMPLE_RATE < atk ? pressTime / (SAMPLE_RATE * atk) :
+			pressValue = pressTime / SAMPLE_RATE < atk ? (1 - releaseValue) * pressTime / (SAMPLE_RATE * atk) + releaseValue :
 				pressTime / SAMPLE_RATE < atk + dec ? sus + (1 - sus) * (atk + dec - pressTime / SAMPLE_RATE) / dec :
 				sus;
+			return pressValue;
 		} else {
-			return releaseTime / SAMPLE_RATE < rel ? sus * (rel - releaseTime / SAMPLE_RATE) / atk : 0;
+			releaseValue = releaseTime / SAMPLE_RATE < rel ? pressValue * (rel - releaseTime / SAMPLE_RATE) / rel : 0;
+			return releaseValue;
 		}
 	});
 	addChild(output);
@@ -198,7 +202,6 @@ void ADSR::step() {
 	bool p = trigger->getValue() > 0;
 
 	if (!pressed && p) {
-		printf("press\n");
 		pressTime = 0;
 		releaseTime = 0;
 	}

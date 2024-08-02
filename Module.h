@@ -90,7 +90,9 @@ private:
 	bool pressed;
 
 	float pressTime;
+	float pressValue;
 	float releaseTime;
+	float releaseValue;
 
 	Input* attack;
 	Input* decay;

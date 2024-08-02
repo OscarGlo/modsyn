@@ -2,6 +2,7 @@
 
 ### Bugs
 - Proper module deletion
+- ADSR initial decay value
 
 ### Backend
 - Smooth volume interpolation
