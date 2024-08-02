@@ -32,6 +32,11 @@ void Drawable::draw(Renderer& renderer) {
 		children[i]->draw(renderer);
 }
 
+void Drawable::remove() {
+	for (int i = children.size() - 1; i >= 0; i--)
+		children[i]->remove();
+}
+
 bool Drawable::onMouseDown(SDL_MouseButtonEvent* evt) {
 	for (int i = 0; i < children.size(); i++)
 		if (children[i]->onMouseDown(evt))
@@ -124,6 +129,16 @@ Socket::Socket(int x, int y) : Drawable(x, y) {
 
 void Socket::draw(Renderer& renderer) {
 	renderer.fillCircle(getX(), getY(), radius, borderColor);
+}
+
+void Socket::remove() {
+	for (int i = sockets.size() - 1; i >= 0; i--) {
+		if (sockets[i] == this) {
+			sockets.erase(sockets.begin() + i);
+			break;
+		}
+	}
+	Drawable::remove();
 }
 
 const int Knob::radius = 15;

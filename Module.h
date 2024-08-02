@@ -20,6 +20,8 @@ public:
 
 	virtual void draw(Renderer& renderer);
 
+	virtual void remove();
+
 	bool inDragArea(int x, int y);
 
 	bool onMouseDown(SDL_MouseButtonEvent* evt);

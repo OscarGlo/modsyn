@@ -57,11 +57,16 @@ bool Module::inDragArea(int x, int y) {
 	return pointInRect(x, y, new SDL_Rect{ getX(), getY(), width, headerHeight });
 }
 
+void Module::remove() {
+	queueDelete = true;
+	Drawable::remove();
+}
+
 bool Module::onMouseDown(SDL_MouseButtonEvent* evt) {
 	if (deletable && evt->button == SDL_BUTTON_LEFT) {
 		SDL_Rect xRect{ getX() + width - headerHeight, getY(), headerHeight, headerHeight };
 		if (pointInRect(evt->x, evt->y, &xRect)) {
-			queueDelete = true;
+			remove();
 			return true;
 		}
 	}
@@ -96,7 +101,7 @@ void WaveGenerator::step() {
 	if (phase > 1) phase -= 1;
 }
 
-Player::Player(int x, int y) : Module("Player", 80, 90, x, y) {
+Player::Player(int x, int y) : Module("Player", 80, 90, x, y, false) {
 	input = new KnobInput(" input", 10, headerHeight + 10);
 	addChild(input);
 }

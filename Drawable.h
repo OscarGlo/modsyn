@@ -19,6 +19,8 @@ public:
 
 	virtual void draw(Renderer& renderer);
 
+	virtual void remove();
+
 	virtual bool onMouseDown(SDL_MouseButtonEvent* evt);
 	virtual bool onMouseUp(SDL_MouseButtonEvent* evt);
 	virtual bool onMouseMotion(SDL_MouseMotionEvent* evt);
@@ -66,6 +68,8 @@ public:
 	Socket(int x, int y);
 
 	virtual void draw(Renderer& renderer);
+
+	virtual void remove();
 };
 
 class Knob : public Draggable {
