@@ -105,3 +105,14 @@ private:
 
 	Output* output;
 };
+
+class Mixer : public Module {
+public:
+	Mixer(int x, int y);
+
+private:
+	Input* input;
+	Input* volume;
+
+	Output* output;
+};

@@ -242,3 +242,16 @@ void ADSR::draw(Renderer& renderer) {
 	};
 	renderer.lines(points, 5, textColor);
 }
+
+Mixer::Mixer(int x, int y) : Module("Mixer", 130, 130, x, y) {
+	input = new Input("input", 10, headerHeight + 10, 40, 40);
+	addChild(input);
+
+	volume = new KnobInput("volume", 60, headerHeight + 10);
+	addChild(volume);
+
+	output = new Output("out", 40, headerHeight + volume->height + 15, [this]() {
+		return input->getValue() * volume->getValue();
+	});
+	addChild(output);
+}

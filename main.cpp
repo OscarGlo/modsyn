@@ -7,8 +7,8 @@
 #include "Component.h"
 #include "Module.h"
 
-constexpr int WIDTH = 640;
-constexpr int HEIGHT = 480;
+constexpr int WIDTH = 800;
+constexpr int HEIGHT = 600;
 
 SDL_Color red{ 0xDD, 0x22, 0x22 };
 
@@ -44,6 +44,9 @@ Menu moduleMenu(0, 0, 120, std::vector<MenuOption>{
 	}),
 	MenuOption("VCO", [](int x, int y) {
 		objects.push_back(windowBounds(new WaveGenerator(x, y)));
+	}),
+	MenuOption("Mixer", [](int x, int y) {
+		objects.push_back(windowBounds(new Mixer(x, y)));
 	}),
 	MenuOption("ADSR", [](int x, int y) {
 		objects.push_back(windowBounds(new ADSR(x, y)));
