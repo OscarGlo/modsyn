@@ -61,14 +61,14 @@ int Font::height() {
 	return TTF_FontHeight(ttf);
 }
 
-Window::Window(const char* name, int width, int height) {
+Window::Window(const char* name, int width, int height, bool resizable) {
 	this->width = width;
 	this->height = height;
 	sdl = SDL_CreateWindow(
 		name,
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		width, height,
-		SDL_WINDOW_SHOWN
+		SDL_WINDOW_SHOWN | (resizable ? SDL_WINDOW_RESIZABLE : 0)
 	);
 	if (sdl == NULL)
 		throw COMPONENT_EXCEPTION("Couldn't create window: %s");

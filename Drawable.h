@@ -43,6 +43,8 @@ public:
 
 	virtual bool inDragArea(int x, int y) = 0;
 
+	void constrain();
+
 	virtual bool onMouseDown(SDL_MouseButtonEvent* evt);
 	virtual bool onMouseUp(SDL_MouseButtonEvent* evt);
 	virtual bool onMouseMotion(SDL_MouseMotionEvent* evt);

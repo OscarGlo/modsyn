@@ -140,6 +140,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Module.cpp" />
     <ClCompile Include="util.h" />
+    <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="JetBrainsMono-Regular.ttf" />
@@ -151,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="Module.h" />
+    <ClInclude Include="window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

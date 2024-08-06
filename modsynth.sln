@@ -5,6 +5,11 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "modsynth", "modsynth.vcxproj", "{685D1F18-A16C-46E4-85D9-0E10CE9151F0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9C37FDC6-BB81-4D12-A054-B57F2F4CDEE2}"
+	ProjectSection(SolutionItems) = preProject
+		window.h = window.h
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
