@@ -150,8 +150,7 @@ int main(int argc, char* args[]) {
 
 		for (int i = objects.size() - 1; i >= 0; i--) {
 			Drawable* obj = objects[i];
-			Module* mod = dynamic_cast<Module*>(obj);
-			if (mod != nullptr && mod->queueDelete) {
+			if (obj->queueDelete) {
 				objects.erase(objects.begin() + i);
 				i--;
 			} else {

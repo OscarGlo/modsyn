@@ -415,6 +415,18 @@ void Cable::draw(Renderer& renderer) {
 	Drawable::draw(renderer);
 }
 
+bool Cable::onMouseDown(SDL_MouseButtonEvent* evt) {
+	if (evt->button == SDL_BUTTON_RIGHT && (
+		this->start->inDragArea(evt->x, evt->y) ||
+		this->end->inDragArea(evt->x, evt->y)
+	)) {
+		this->queueDelete = true;
+		return true;
+	}
+
+	return this->start->onMouseDown(evt) || this->end->onMouseDown(evt);
+}
+
 MenuOption::MenuOption(const char* label, std::function<void(int, int)> action) {
 	this->label = label;
 	this->action = action;

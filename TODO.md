@@ -11,7 +11,6 @@
 
 ### Interactions
 - Cable shortcut
-- Cable delete
 - Order elements on drag
 
 ### Modules

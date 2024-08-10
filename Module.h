@@ -7,7 +7,6 @@ public:
 	static const int borderWidth;
 	static const int headerHeight;
 
-	bool queueDelete;
 	bool deletable;
 
 	EditText* title;
