@@ -201,6 +201,50 @@ ADSR::ADSR(int x, int y) : Module("ADSR", 290, 190, x, y) {
 	addChild(output);
 }
 
+const float Delay::delayMax = 1.0;
+
+Delay::Delay(int x, int y) : Module("Delay", 130, 130, x, y) {
+	input = new Input("input", 10, headerHeight + 10, 40, 40);
+	addChild(input);
+
+	amount = new KnobInput("amount", 60, headerHeight + 10, std::vector<float>{ -1, 1 });
+
+	addChild(amount);
+
+	maxSampleStored = SAMPLE_RATE * delayMax;
+	buffer = new float[maxSampleStored];
+	transitionBuffer = new float[maxSampleStored];
+	writeIndex = 0;
+	storedDelayOffset = 0;
+
+	odd = false;
+
+	readIndex = amount->getValue();
+
+	output = new Output("out", 40, headerHeight + amount->height + 15, [this]() {
+		int newDelay = getSampleOffset();
+		int delayDiff = newDelay - storedDelayOffset;
+		storedDelayOffset = newDelay;
+
+
+		int finalIndex = (writeIndex - storedDelayOffset + maxSampleStored) % maxSampleStored;
+		return buffer[finalIndex];
+		});
+	addChild(output);
+}
+
+int Delay::getSampleOffset() {
+
+	return ((amount->getValue() + 1) / 2) * (maxSampleStored-1);
+}
+
+void Delay::step() {
+	Module::step();
+
+	writeIndex = (writeIndex + 1) % maxSampleStored;
+	buffer[writeIndex] = input->getValue();
+}
+
 void ADSR::step() {
 	Module::step();
 

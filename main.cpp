@@ -45,6 +45,9 @@ Menu moduleMenu(0, 0, 120, std::vector<MenuOption>{
 	MenuOption("BitCrusher", [](int x, int y) {
 		objects.push_back(new BitCrusher(x, y));
 	}),
+	MenuOption("Delay", [](int x, int y) {
+		objects.push_back(new Delay(x, y));
+	}),
 });
 
 SDL_AudioSpec audioSpec {

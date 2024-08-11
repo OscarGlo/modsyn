@@ -105,6 +105,32 @@ private:
 	Output* output;
 };
 
+
+class Delay : public Module {
+public:
+	Delay(int x, int y);
+
+
+	virtual void step();
+	virtual int getSampleOffset();
+
+private:
+	Input* input;
+	Input* amount;
+
+	static const float delayMax;
+	int maxSampleStored;
+
+	int storedDelayOffset;
+	float* buffer;
+	float* transitionBuffer;
+	int writeIndex, readIndex;
+
+	bool odd;
+
+	Output* output;
+};
+
 class Mixer : public Module {
 public:
 	Mixer(int x, int y);

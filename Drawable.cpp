@@ -13,6 +13,7 @@ const SDL_Color Drawable::textColor{ 0xD0, 0xD0, 0xD0 };
 Drawable::Drawable(int x, int y) {
 	this->x = x;
 	this->y = y;
+	queueDelete = false;
 }
 
 void Drawable::addChild(Drawable* child) {
