@@ -4,6 +4,7 @@
 #include "audioConfig.h"
 #include "Module.h"
 #include "util.h"
+#include "window.h"
 
 const SDL_Color Drawable::bgColor{ 0x20, 0x20, 0x20 };
 const SDL_Color Drawable::borderColor{ 0x40, 0x40, 0x40 };
@@ -98,21 +99,31 @@ bool Draggable::onMouseUp(SDL_MouseButtonEvent* evt) {
 	return tmp;
 }
 
+void Draggable::constrain() {
+	int l = left ? *left : 0;
+	int mix = minX ? *minX : 0;
+	if (x - l < mix) x = mix + l;
+
+	int r = right ? *right : 0;
+	int max = maxX ? *maxX : window.width;
+	if (x + r > max) x = max - r;
+
+	int t = top ? *top : 0;
+	int miy = minY ? *minY : 0;
+	if (y - t < miy) y = miy + t;
+
+	int b = bottom ? *bottom : 0;
+	int may = maxY ? *maxY : window.height;
+	if (y + b > may) y = may - b;
+}
+
 bool Draggable::onMouseMotion(SDL_MouseMotionEvent* evt) {
 	if (Drawable::onMouseMotion(evt)) return true;
 
 	if (dragging) {
 		x = evt->x - dragX;
-		int l = left ? *left : 0;
-		if (minX && x - l < *minX) x = *minX + l;
-		int r = right ? *right : 0;
-		if (maxX && x + r > *maxX) x = *maxX - r;
-
 		y = evt->y - dragY;
-		int t = top ? *top : 0;
-		if (minY && y - t < *minY) y = *minY + t;
-		int b = bottom ? *bottom : 0;
-		if (maxY && y + b > *maxY) y = *maxY - b;
+		constrain();
 	}
 	return dragging;
 }
@@ -402,6 +413,18 @@ void Cable::draw(Renderer& renderer) {
 		points, 3, color
 	);
 	Drawable::draw(renderer);
+}
+
+bool Cable::onMouseDown(SDL_MouseButtonEvent* evt) {
+	if (evt->button == SDL_BUTTON_RIGHT && (
+		this->start->inDragArea(evt->x, evt->y) ||
+		this->end->inDragArea(evt->x, evt->y)
+	)) {
+		this->queueDelete = true;
+		return true;
+	}
+
+	return this->start->onMouseDown(evt) || this->end->onMouseDown(evt);
 }
 
 MenuOption::MenuOption(const char* label, std::function<void(int, int)> action) {

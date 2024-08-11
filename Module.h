@@ -7,7 +7,6 @@ public:
 	static const int borderWidth;
 	static const int headerHeight;
 
-	bool queueDelete;
 	bool deletable;
 
 	EditText* title;
@@ -102,6 +101,17 @@ private:
 	Input* release;
 
 	Input* trigger;
+
+	Output* output;
+};
+
+class Mixer : public Module {
+public:
+	Mixer(int x, int y);
+
+private:
+	Input* input;
+	Input* volume;
 
 	Output* output;
 };

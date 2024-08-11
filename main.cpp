@@ -6,9 +6,7 @@
 #include "audioConfig.h"
 #include "Component.h"
 #include "Module.h"
-
-constexpr int WIDTH = 640;
-constexpr int HEIGHT = 480;
+#include "window.h"
 
 SDL_Color red{ 0xDD, 0x22, 0x22 };
 
@@ -24,35 +22,28 @@ static SDL_Color randomColor() {
 	};
 }
 
-static Draggable* windowBounds(Draggable* obj) {
-	obj->minX = new int(0);
-	obj->minY = new int(0);
-	obj->maxX = new int(WIDTH);
-	obj->maxY = new int(HEIGHT);
-	return obj;
-}
-
-Player player = *(Player*) windowBounds(new Player(20, 20));
+Player player(20, 20);
 
 Menu moduleMenu(0, 0, 120, std::vector<MenuOption>{
 	MenuOption("Add cable/module"),
 	MenuOption("Cable", [](int x, int y) {
 		Cable* cable = new Cable(x, y, randomColor());
-		windowBounds(cable->start);
-		windowBounds(cable->end);
 		objects.insert(objects.begin() + 1, cable);
 	}),
 	MenuOption("VCO", [](int x, int y) {
-		objects.push_back(windowBounds(new WaveGenerator(x, y)));
+		objects.push_back(new WaveGenerator(x, y));
+	}),
+	MenuOption("Mixer", [](int x, int y) {
+		objects.push_back(new Mixer(x, y));
 	}),
 	MenuOption("ADSR", [](int x, int y) {
-		objects.push_back(windowBounds(new ADSR(x, y)));
+		objects.push_back(new ADSR(x, y));
 	}),
 	MenuOption("Scope", [](int x, int y) {
-		objects.push_back(windowBounds(new Scope(x, y)));
+		objects.push_back(new Scope(x, y));
 	}),
 	MenuOption("BitCrusher", [](int x, int y) {
-		objects.push_back(windowBounds(new BitCrusher(x, y)));
+		objects.push_back(new BitCrusher(x, y));
 	}),
 });
 
@@ -82,7 +73,6 @@ int main(int argc, char* args[]) {
 	new SDL(SDL_INIT_AUDIO | SDL_INIT_VIDEO);
 	new TTF();
 
-	Window window("modsynth", WIDTH, HEIGHT);
 	Renderer renderer(window);
 
 	AudioDevice audio(&audioSpec);
@@ -136,14 +126,31 @@ int main(int argc, char* args[]) {
 					if (o->onTextInput(&e.text))
 						break;
 				}
+			else if (e.type == SDL_WINDOWEVENT) {
+				if (e.window.event == SDL_WINDOWEVENT_RESIZED) {
+					window.width = e.window.data1;
+					window.height = e.window.data2;
+
+					for (Drawable* obj : objects) {
+						Draggable* d = dynamic_cast<Draggable*>(obj);
+						if (d != nullptr)
+							d->constrain();
+
+						Cable* c = dynamic_cast<Cable*>(obj);
+						if (c != nullptr) {
+							c->start->constrain();
+							c->end->constrain();
+						}
+					}
+				}
+			}
 		}
 
-		renderer.fillRect(new SDL_Rect{ 0, 0, WIDTH, HEIGHT }, SDL_Color{ 0, 0, 0 });
+		renderer.fillRect(new SDL_Rect{ 0, 0, window.width, window.height }, SDL_Color{ 0, 0, 0 });
 
 		for (int i = objects.size() - 1; i >= 0; i--) {
 			Drawable* obj = objects[i];
-			Module* mod = dynamic_cast<Module*>(obj);
-			if (mod != nullptr && mod->queueDelete) {
+			if (obj->queueDelete) {
 				objects.erase(objects.begin() + i);
 				i--;
 			} else {

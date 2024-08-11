@@ -9,6 +9,7 @@ public:
 	static const SDL_Color bgColor, borderColor, textColor;
 
 	int x, y;
+	bool queueDelete;
 
 	Drawable(int x, int y);
 
@@ -42,6 +43,8 @@ public:
 	int* left, * right, * top, * bottom;
 
 	virtual bool inDragArea(int x, int y) = 0;
+
+	void constrain();
 
 	virtual bool onMouseDown(SDL_MouseButtonEvent* evt);
 	virtual bool onMouseUp(SDL_MouseButtonEvent* evt);
@@ -211,6 +214,8 @@ public:
 	Connector* end;
 
 	void draw(Renderer& renderer);
+
+	virtual bool onMouseDown(SDL_MouseButtonEvent* evt);
 
 private:
 	SDL_Color color;
