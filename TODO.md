@@ -2,6 +2,9 @@
 
 ### Bugs
 
+### Refactor
+- Constrain on Drawable
+
 ### Backend
 - Smooth volume interpolation
 
@@ -11,7 +14,6 @@
 
 ### Interactions
 - Cable shortcut
-- Order elements on drag
 
 ### Modules
 - Delay

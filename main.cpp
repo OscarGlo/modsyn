@@ -24,6 +24,12 @@ static SDL_Color randomColor() {
 
 Player player(20, 20);
 
+static void insert_object(Drawable* d) {
+	int i = 0;
+	while (dynamic_cast<Module*>(objects[i]) == nullptr) i++;
+	objects.insert(objects.begin() + i, d);
+}
+
 Menu moduleMenu(0, 0, 120, std::vector<MenuOption>{
 	MenuOption("Add cable/module"),
 	MenuOption("Cable", [](int x, int y) {
@@ -31,19 +37,19 @@ Menu moduleMenu(0, 0, 120, std::vector<MenuOption>{
 		objects.insert(objects.begin() + 1, cable);
 	}),
 	MenuOption("VCO", [](int x, int y) {
-		objects.push_back(new WaveGenerator(x, y));
+		insert_object(new WaveGenerator(x, y));
 	}),
 	MenuOption("Mixer", [](int x, int y) {
-		objects.push_back(new Mixer(x, y));
+		insert_object(new Mixer(x, y));
 	}),
 	MenuOption("ADSR", [](int x, int y) {
-		objects.push_back(new ADSR(x, y));
+		insert_object(new ADSR(x, y));
 	}),
 	MenuOption("Scope", [](int x, int y) {
-		objects.push_back(new Scope(x, y));
+		insert_object(new Scope(x, y));
 	}),
 	MenuOption("BitCrusher", [](int x, int y) {
-		objects.push_back(new BitCrusher(x, y));
+		insert_object(new BitCrusher(x, y));
 	}),
 });
 
@@ -88,9 +94,18 @@ int main(int argc, char* args[]) {
 
 			if (e.type == SDL_MOUSEBUTTONDOWN) {
 				bool handled = false;
-				for (Drawable* o : objects) {
+				for (int i = 0; i < objects.size(); i++) {
+					Drawable* o = objects[i];
 					if (o->onMouseDown(&e.button)) {
 						handled = true;
+
+						if (dynamic_cast<Module*>(o) != nullptr) {
+							int j = 0;
+							while (dynamic_cast<Module*>(objects[j]) == nullptr) j++;
+							objects.erase(objects.begin() + i);
+							objects.insert(objects.begin() + j, o);
+						}
+
 						break;
 					}
 				}
