@@ -80,14 +80,22 @@ WaveGenerator::WaveGenerator(int x, int y) : Module("VCO", 150, 130, x, y) {
 	freq = new KnobInput("  freq", 10, headerHeight + 10, std::vector<float>{ -1, -0.67, -0.33, 0, 0.33, 0.67, 1 });
 	addChild(freq);
 
-	type = new KnobInput("  type", 80, headerHeight + 10, std::vector<float>{ -1, 0, 1 });
+	type = new KnobInput("  type", 80, headerHeight + 10, std::vector<float>{ -1, -0.33, 0.33, 1 });
 	addChild(type);
 
 	output = new Output("out", 50, headerHeight + freq->height + 15, [this]() {
-		float t = type->getValue();
-		if (t < 0)
-			return (float) (phase > 0.5 ? -1 : 1);
-		return SDL_sinf(2 * M_PI * phase);
+		float t = (type->getValue() + 1) * 3 / 2;
+		if (t <= 1)
+			return (phase > 0.5 ? 1 : -1) * (1 - t)
+				+ (2 * phase - 1) * (1 - abs(t - 1));
+		if (t > 1 && t < 2) {
+			float p = phase / 2;
+			float n = (3 - t) / 2;
+			return 2 * ((p < n - 1) ? (p / n) : (1 - (n - p) / (1 - n))) - 1;
+		}
+		if (t >= 2)
+			return (float) (2 * abs(2 * fmod(phase + 0.25, 1) - 1) - 1) * (1 - abs(t - 2))
+				+ SDL_sinf(2 * M_PI * phase + M_PI) * (t - 2);
 	});
 	addChild(output);
 
