@@ -117,6 +117,7 @@ public:
 private:
 	Input* input;
 	Input* amount;
+	Input* dryness;
 
 	static const float delayMax;
 	int maxSampleStored;
@@ -127,6 +128,29 @@ private:
 	int writeIndex, readIndex;
 
 	bool odd;
+
+	Output* output;
+};
+
+class Record : public Module {
+public:
+	Record(int x, int y);
+
+	virtual void step();
+
+private:
+	Input* input;
+	Input* recordButton;
+	Input* readAt;
+	Input* stopAt;
+
+	static const float recordMax;
+	int maxSampleStored;
+
+	float* buffer;
+	int currentIndex;
+
+	bool isRecording;
 
 	Output* output;
 };

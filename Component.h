@@ -3,6 +3,7 @@
 #include <format>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <exception>
 
 class ComponentException : std::exception {
 public:

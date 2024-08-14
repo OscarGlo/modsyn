@@ -127,6 +127,7 @@ public:
 
 	virtual float getValue();
 
+	virtual void setValue(float value);
 protected:
 	Input(const char* name, int x, int y, int width, int height, int socketX, int socketY);
 
@@ -141,9 +142,10 @@ public:
 	virtual int textX();
 	virtual int textY();
 
-	KnobInput(const char* name, int x, int y, std::vector<float> notches = { -1, 0, 1 });
+	KnobInput(const char* name, int x, int y, std::vector<float> notches = { -1, 0, 1 }, float defaultValue = 0);
 
 	virtual float getValue();
+	virtual void setValue(float value);
 
 private:
 	Knob* knob;
@@ -159,6 +161,7 @@ public:
 	ButtonInput(const char* name, int x, int y, bool toggle = false);
 
 	virtual float getValue();
+	virtual void setValue(float value);
 
 private:
 	Button* button;

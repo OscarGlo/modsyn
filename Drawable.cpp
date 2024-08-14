@@ -271,13 +271,18 @@ float Input::getValue() {
 	return 0;
 }
 
+void Input::setValue(float value) {
+
+}
+
+
 const int KnobInput::knobX = 20;
 const int KnobInput::knobY = 20;
 
 int KnobInput::textX() { return 2; };
 int KnobInput::textY() { return 34; };
 
-KnobInput::KnobInput(const char* name, int x, int y, std::vector<float> notches) : Input(name, x, y, 60, 50, 48, 12) {
+KnobInput::KnobInput(const char* name, int x, int y, std::vector<float> notches, float _defaultValue) : Input(name, x, y, 60, 50, 48, 12) {
 	knob = new Knob(knobX, knobY, notches);
 	addChild(knob);
 }
@@ -290,6 +295,11 @@ float KnobInput::getValue() {
 	}
 	return knob->value;
 }
+
+void KnobInput::setValue(float value) {
+	knob->value = value;
+}
+
 
 const int ButtonInput::buttonX = 15;
 const int ButtonInput::buttonY = 15;
@@ -309,6 +319,10 @@ float ButtonInput::getValue() {
 			return output->value;
 	}
 	return button->pressed ? 1 : 0;
+}
+
+void ButtonInput::setValue(float value) {
+	button->pressed = value > 0 ? 1 : 0;
 }
 
 const int Output::socketX = 10;

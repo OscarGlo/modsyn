@@ -54,6 +54,9 @@ Menu moduleMenu(0, 0, 120, std::vector<MenuOption>{
 	MenuOption("Delay", [](int x, int y) {
 		objects.push_back(new Delay(x, y));
 	}),
+	MenuOption("Record", [](int x, int y) {
+		objects.push_back(new Record(x, y));
+	}),
 });
 
 SDL_AudioSpec audioSpec {
