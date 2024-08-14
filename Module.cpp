@@ -1,6 +1,7 @@
 #include "audioConfig.h"
 #include "Module.h"
 #include "util.h"
+#include <algorithm>
 
 const int Module::borderWidth = 3;
 const int Module::headerHeight = 20;
@@ -203,13 +204,15 @@ ADSR::ADSR(int x, int y) : Module("ADSR", 290, 190, x, y) {
 
 const float Delay::delayMax = 1.0;
 
-Delay::Delay(int x, int y) : Module("Delay", 130, 130, x, y) {
+Delay::Delay(int x, int y) : Module("Delay", 200, 130, x, y) {
 	input = new Input("input", 10, headerHeight + 10, 40, 40);
 	addChild(input);
 
 	amount = new KnobInput("amount", 60, headerHeight + 10, std::vector<float>{ -1, 1 });
+	dryness = new KnobInput("dryness", 130, headerHeight + 10, std::vector<float>{ -1, 1 });
 
 	addChild(amount);
+	addChild(dryness);
 
 	maxSampleStored = SAMPLE_RATE * delayMax;
 	buffer = new float[maxSampleStored];
@@ -228,8 +231,12 @@ Delay::Delay(int x, int y) : Module("Delay", 130, 130, x, y) {
 
 
 		int finalIndex = (writeIndex - storedDelayOffset + maxSampleStored) % maxSampleStored;
-		return buffer[finalIndex];
-		});
+		float wetValue = buffer[finalIndex];
+		float dryValue = buffer[writeIndex];
+
+		float dryLerpValue = (dryness->getValue() + 1.0) /2.0;
+		return wetValue * (1 - dryLerpValue) + dryValue * dryLerpValue;
+		});;
 	addChild(output);
 }
 
@@ -243,6 +250,89 @@ void Delay::step() {
 
 	writeIndex = (writeIndex + 1) % maxSampleStored;
 	buffer[writeIndex] = input->getValue();
+}
+
+const float Record::recordMax = 10.0;
+
+Record::Record(int x, int y) : Module("Record", 240, 130, x, y) {
+	input = new Input("input", 10, headerHeight + 10, 40, 40);
+	addChild(input);
+
+	readAt = new KnobInput("read at", 60, headerHeight + 10, std::vector<float>{ -1, 0, 1 }, -1);
+	readAt->setValue(0);
+	stopAt = new KnobInput("stop at", 130, headerHeight + 10, std::vector<float>{ -1, 0, 1 }, 1);
+	stopAt->setValue(0);
+
+	addChild(readAt);
+	addChild(stopAt);
+
+	recordButton = new ButtonInput("Start Recording", 200, headerHeight + 10, true);
+	addChild(recordButton);
+
+	maxSampleStored = SAMPLE_RATE * recordMax;
+	buffer = new float[maxSampleStored];
+
+	currentIndex = 0;
+	isRecording = false;
+
+	output = new Output("out", 40, headerHeight + input->height + 15, [this]() {
+		return buffer[currentIndex];
+		});;
+	addChild(output);
+}
+
+void Record::step() {
+	Module::step();
+
+	currentIndex++;
+
+	bool newRecordState = recordButton->getValue();
+
+	if (isRecording) {
+		currentIndex = currentIndex % maxSampleStored;
+		if (!newRecordState) {
+			readAt->setValue(-1);
+			stopAt->setValue(1);
+
+			for (size_t i = 0; i < currentIndex/2; i++)
+			{
+				buffer[i] = buffer[currentIndex-i];
+			}
+
+			for (size_t i = 0; i < (maxSampleStored - (currentIndex + 1)) / 2; i++)
+			{
+				buffer[currentIndex + i] = buffer[maxSampleStored - i];
+			}
+
+			for (size_t i = 0; i < maxSampleStored /2; i++)
+			{
+				buffer[i] = buffer[maxSampleStored - i];
+			}
+			currentIndex = 0;
+
+		}
+		else {
+			buffer[currentIndex] = input->getValue();
+		}
+	}
+	else {
+		if (newRecordState) {
+			for (size_t i = 0; i < maxSampleStored; i++)
+			{
+				buffer[i] = 0;
+			}
+			currentIndex = 0;
+		}
+		else {
+			int startIndex = ((readAt->getValue() + 1) / 2) * maxSampleStored;
+			int stopIndex = ((stopAt->getValue() + 1) / 2) * maxSampleStored;
+
+			if (currentIndex == stopIndex || currentIndex >= maxSampleStored) {
+				currentIndex = startIndex;
+			}
+		}
+	}
+	isRecording = newRecordState;
 }
 
 void ADSR::step() {
