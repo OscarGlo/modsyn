@@ -252,7 +252,7 @@ void Delay::step() {
 	buffer[writeIndex] = input->getValue();
 }
 
-const float Record::recordMax = 10.0;
+const float Record::recordMax = 10;
 
 Record::Record(int x, int y) : Module("Record", 240, 130, x, y) {
 	input = new Input("input", 10, headerHeight + 10, 40, 40);
@@ -293,21 +293,29 @@ void Record::step() {
 		if (!newRecordState) {
 			readAt->setValue(-1);
 			stopAt->setValue(1);
+			size_t i = 0;
 
-			for (size_t i = 0; i < currentIndex/2; i++)
+			for (i = 0; i < currentIndex/2; i++)
 			{
-				buffer[i] = buffer[currentIndex-i];
+				float tmp = buffer[i];
+				buffer[i] = buffer[currentIndex - 1 - i];
+				buffer[currentIndex -1 - i] = tmp;
 			}
 
-			for (size_t i = 0; i < (maxSampleStored - (currentIndex + 1)) / 2; i++)
+			for (i = 0; i < (maxSampleStored - currentIndex) / 2; i++)
 			{
-				buffer[currentIndex + i] = buffer[maxSampleStored - i];
+				float tmp = buffer[currentIndex + i];
+				buffer[currentIndex + i] = buffer[maxSampleStored - 1 - i];
+				buffer[maxSampleStored - 1 - i] = tmp;
 			}
 
-			for (size_t i = 0; i < maxSampleStored /2; i++)
+			for (i = 0; i < maxSampleStored /2; i++)
 			{
-				buffer[i] = buffer[maxSampleStored - i];
+				float tmp = buffer[i];
+				buffer[i] = buffer[maxSampleStored - 1 - i];
+				buffer[maxSampleStored - 1 - i] = tmp;
 			}
+
 			currentIndex = 0;
 
 		}
@@ -324,10 +332,14 @@ void Record::step() {
 			currentIndex = 0;
 		}
 		else {
-			int startIndex = ((readAt->getValue() + 1) / 2) * maxSampleStored;
-			int stopIndex = ((stopAt->getValue() + 1) / 2) * maxSampleStored;
+			int startIndex = ((readAt->getValue() + 1) / 2) * (maxSampleStored-1);
+			int stopIndex = ((stopAt->getValue() + 1) / 2) * (maxSampleStored-1);
 
-			if (currentIndex == stopIndex || currentIndex >= maxSampleStored) {
+			int startShifted = (startIndex + (maxSampleStored-1 - stopIndex)) % maxSampleStored;
+			int stopShifted = (stopIndex + (maxSampleStored-1 - stopIndex)) % maxSampleStored;
+			int currentShifted = (currentIndex + (maxSampleStored-1 - stopIndex));
+
+			if (currentShifted < startShifted ||  currentShifted >= stopShifted) {
 				currentIndex = startIndex;
 			}
 		}
