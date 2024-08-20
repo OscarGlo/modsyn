@@ -254,7 +254,7 @@ void Delay::step() {
 
 const float Record::recordMax = 10;
 
-Record::Record(int x, int y) : Module("Record", 240, 130, x, y) {
+Record::Record(int x, int y) : Module("Record", 300, 130, x, y) {
 	input = new Input("input", 10, headerHeight + 10, 40, 40);
 	addChild(input);
 
@@ -266,7 +266,7 @@ Record::Record(int x, int y) : Module("Record", 240, 130, x, y) {
 	addChild(readAt);
 	addChild(stopAt);
 
-	recordButton = new ButtonInput("Start Recording", 200, headerHeight + 10, true);
+	recordButton = new ButtonInput("Start Record", 200, headerHeight + 10, true);
 	addChild(recordButton);
 
 	maxSampleStored = SAMPLE_RATE * recordMax;
